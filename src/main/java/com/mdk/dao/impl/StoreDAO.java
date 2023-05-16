@@ -1,18 +1,6 @@
 
 package com.mdk.dao.impl;
 
-import com.mdk.connection.DBConnection;
-import com.mdk.dao.IStoreDAO;
-
-import com.mdk.models.ImageStore;
-import com.mdk.models.Store;
-import com.mdk.models.User;
-import com.mdk.paging.Pageble;
-import com.mdk.services.IImageStoreService;
-import com.mdk.services.IUserService;
-import com.mdk.services.impl.ImageStoreService;
-import com.mdk.services.impl.UserService;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,6 +11,7 @@ import java.util.List;
 import com.mdk.connection.DBConnection;
 import com.mdk.dao.IStoreDAO;
 import com.mdk.models.Store;
+import com.mdk.paging.Pageble;
 import com.mdk.services.IImageStoreService;
 import com.mdk.services.IUserService;
 import com.mdk.services.impl.ImageStoreService;

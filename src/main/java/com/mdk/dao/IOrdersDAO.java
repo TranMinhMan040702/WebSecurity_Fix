@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.mdk.models.OrderDetails;
 import com.mdk.models.Orders;
-import com.mdk.models.User;
 import com.mdk.paging.Pageble;
 
 public interface IOrdersDAO {

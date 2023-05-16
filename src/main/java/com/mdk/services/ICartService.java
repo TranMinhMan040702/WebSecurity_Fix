@@ -18,4 +18,6 @@ public interface ICartService {
 	Cart findByUserAndStore(int userId, int storeId);
 
 	List<Cart> findByUserId(int userId);
+	
+	int findUserByCart(int cartId);
 }

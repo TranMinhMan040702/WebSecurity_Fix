@@ -44,26 +44,24 @@ public class CartController extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String url = req.getRequestURL().toString();
 
+		// Insecure Direct Object References
+		
 		if (url.contains("/web/cart/delivery")) {
-			/*
-			 * User user = (User) SessionUtil.getInstance().getValue(req, "USER");
-			 * List<Cart> listCart = cartService.findByUserId(user.getId()); List<Store>
-			 * listStore = new ArrayList<Store>(); List<CartItem> listCartItem = new
-			 * ArrayList<CartItem>(); List<Product> listProduct = new ArrayList<Product>();
-			 * for (Cart cart : listCart) {
-			 * listStore.add(storeService.findById(cart.getStoreId())); for (CartItem
-			 * cartItem : cartItemService.findAllByCart(cart.getId())) {
-			 * listCartItem.add(cartItem); Product product =
-			 * productService.findOneById(cartItem.getProductId()); if
-			 * (!listProduct.stream().filter(o -> o.getId() ==
-			 * product.getId()).findFirst().isPresent()) listProduct.add(product); } }
-			 * 
-			 * req.setAttribute("listCart", listCart); req.setAttribute("listStore",
-			 * listStore); req.setAttribute("listCartItem", listCartItem);
-			 * req.setAttribute("listProduct", listProduct); req.setAttribute("user", user);
-			 * req.getRequestDispatcher("/views/web/addressdelivery.jsp").forward(req,
-			 * resp);
-			 */
+			int cartId = Integer.parseInt(req.getParameter("cart"));
+			if (!checkCartOfUserCurrent(req, cartId)) {
+				resp.sendRedirect(req.getContextPath() + "/logout");
+			} else {
+				baseInfo(req, resp);
+				Cart cart = cartService.findById(cartId);
+				List<Delivery> listDelivery = deliveryService.findAllActive();
+
+				SessionUtil.getInstance().putValue(req, CART_USER, cart);
+
+				req.setAttribute("cart", cart);
+				req.setAttribute("listDelivery", listDelivery);
+				req.getRequestDispatcher("/views/web/addressdelivery.jsp").forward(req, resp);
+			}
+			
 		} else if (url.contains("/web/cart")) {
 			baseInfo(req, resp);
 			User user = (User) SessionUtil.getInstance().getValue(req, USER_MODEL);
@@ -96,6 +94,14 @@ public class CartController extends HttpServlet {
 			changeSessionCart(req, resp);
 			resp.sendRedirect(req.getContextPath() + "/web");
 		}
+	}
+	
+	private boolean checkCartOfUserCurrent(HttpServletRequest req, int cartId) {
+
+		int id = ((User) SessionUtil.getInstance().getValue(req, "USERMODEL")).getId();
+		int idUserOfOrderItem = cartService.findUserByCart(cartId);
+
+		return id == idUserOfOrderItem ? true : false;
 	}
 
 	protected void insertItem(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

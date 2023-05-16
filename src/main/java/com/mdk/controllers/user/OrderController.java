@@ -41,6 +41,7 @@ import com.mdk.services.impl.StoreService;
 import com.mdk.services.impl.TransactionService;
 import com.mdk.services.impl.UserService;
 import com.mdk.utils.SessionUtil;
+
 @WebServlet(urlPatterns = { "/web/order/create", "/web/order/list", "/web/order/item/list" })
 public class OrderController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -64,10 +65,18 @@ public class OrderController extends HttpServlet {
 			req.setAttribute("ordersList", ordersList);
 			req.getRequestDispatcher("/views/web/orders.jsp").forward(req, resp);
 		} else if (url.contains("web/order/item/list")) {
+
+			// Insecure Direct Object References
+
 			int id = Integer.parseInt(req.getParameter("id"));
-			Orders orders =  ordersService.findById(id);
-			req.setAttribute("orders", orders);
-			req.getRequestDispatcher("/views/web/ordersitem.jsp").forward(req, resp);
+			if (!checkOrderItemOfUserCurrent(req, id)) {
+				resp.sendRedirect(req.getContextPath() + "/logout");
+			} else {
+				Orders orders = ordersService.findById(id);
+				req.setAttribute("orders", orders);
+				req.getRequestDispatcher("/views/web/ordersitem.jsp").forward(req, resp);
+			}
+			
 		}
 	}
 
@@ -78,11 +87,19 @@ public class OrderController extends HttpServlet {
 		if (url.contains("/web/order/create")) {
 			insert(req, resp);
 			insertItem(req, resp);
-			insertTransaction(req,resp);
+			insertTransaction(req, resp);
 			changeSessionCart(req, resp);
 			resp.sendRedirect(req.getContextPath() + "/web/cart");
 		}
 
+	}
+
+	private boolean checkOrderItemOfUserCurrent(HttpServletRequest req, int orderItemId) {
+
+		int id = ((User) SessionUtil.getInstance().getValue(req, "USERMODEL")).getId();
+		int idUserOfOrderItem = ordersItemService.findUserByOrderItem(orderItemId);
+
+		return id == idUserOfOrderItem ? true : false;
 	}
 
 	protected void insert(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -154,30 +171,31 @@ public class OrderController extends HttpServlet {
 		SessionUtil.getInstance().putValue(req, COUNT_CART_HEADER, countOfCarts);
 		SessionUtil.getInstance().putValue(req, USER_MODEL, newuser);
 	}
-	
-	protected void insertTransaction(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+	protected void insertTransaction(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
 		req.setCharacterEncoding("UTF-8");
 		resp.setCharacterEncoding("UTF-8");
 
 		Cart cart = (Cart) SessionUtil.getInstance().getValue(req, CART_USER);
 		User user = (User) SessionUtil.getInstance().getValue(req, USER_MODEL);
 		Store store = cart.getStore();
-		
+
 		int deliveryId = Integer.parseInt(req.getParameter("deliveryId"));
-		
+
 		Double deliveryPrice = deliveryService.findById(deliveryId).getPrice();
 		Double amountFromUser = cart.getCartItems().stream().mapToDouble(o1 -> o1.getProduct().getPromotionalPrice())
 				.sum() + deliveryPrice;
 		Double amountToStore = amountFromUser - 0.025 * amountFromUser;
-		
+
 		Transaction transaction = new Transaction();
 		transaction.setUserId(user.getId());
 		transaction.setStoreId(store.getId());
 		transaction.setUp(true);
 		transaction.setAmount(amountToStore);
 		transactionService.insert(transaction);
-		
-		storeService.updateWallet(store.getId(), store.geteWallet()+amountToStore);
-		
+
+		storeService.updateWallet(store.getId(), store.geteWallet() + amountToStore);
+
 	}
 }

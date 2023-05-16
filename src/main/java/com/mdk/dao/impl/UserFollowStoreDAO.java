@@ -9,13 +9,10 @@ import java.util.List;
 
 import com.mdk.connection.DBConnection;
 import com.mdk.dao.IUserFollowStoreDAO;
-import com.mdk.models.UserFollowProduct;
 import com.mdk.models.UserFollowStore;
 import com.mdk.paging.Pageble;
-import com.mdk.services.IProductService;
 import com.mdk.services.IStoreService;
 import com.mdk.services.IUserService;
-import com.mdk.services.impl.ProductService;
 import com.mdk.services.impl.StoreService;
 import com.mdk.services.impl.UserService;
 

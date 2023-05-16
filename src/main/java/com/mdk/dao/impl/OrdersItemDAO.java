@@ -22,7 +22,8 @@ public class OrdersItemDAO extends DBConnection implements IOrdersItemDAO {
 
 	@Override
 	public void insert(OrdersItem orderItem) {
-		String sql = "INSERT INTO OrdersItem (ordersId, productId, count) " + "VALUE (?,?,?)";
+		String sql = "INSERT INTO OrdersItem (ordersId, productId, count) "
+				+ "VALUE (?,?,?)";
 		try {
 			conn = getConnection();
 			ps = conn.prepareStatement(sql);
@@ -52,12 +53,30 @@ public class OrdersItemDAO extends DBConnection implements IOrdersItemDAO {
 				ordersItem.setOrdersId(rs.getInt("ordersId"));
 				ordersItem.setProductId(rs.getInt("productId"));
 				ordersItem.setCount(rs.getInt("count"));
-				ordersItem.setProduct(productService.findOneById(rs.getInt("productId")));
+				ordersItem.setProduct(
+						productService.findOneById(rs.getInt("productId")));
 				ordersItems.add(ordersItem);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return ordersItems;
+	}
+
+	@Override
+	public int findUserByOrdersItem(int orderItemId) {
+		String sql = "select userId from ordersitem join orders on ordersitem.ordersId = orders.id where ordersitem.id = ?";
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setInt(1, orderItemId);
+			rs = ps.executeQuery();
+			while(rs.next()) {
+				return rs.getInt("userId");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 }

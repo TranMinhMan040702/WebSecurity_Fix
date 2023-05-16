@@ -1,15 +1,10 @@
 
 package com.mdk.dao;
 
-import com.mdk.models.Product;
-import com.mdk.models.Store;
-import com.mdk.models.User;
-import com.mdk.paging.Pageble;
-
-import java.sql.SQLException;
 import java.util.List;
 
 import com.mdk.models.Store;
+import com.mdk.paging.Pageble;
 
 public interface IStoreDAO {
     void insert(Store store);
