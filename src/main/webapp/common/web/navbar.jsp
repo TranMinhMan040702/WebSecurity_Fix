@@ -1,4 +1,4 @@
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@include file="/common/taglib.jsp"%>
@@ -69,7 +69,8 @@
 				<form method="post" class="searchbox d-flex mt-3">
 					<input id="searchinput" name="searchkeyword" type="text"
 						oninput="changeFormAction()" class="text search-input"
-						placeholder="Tìm kiếm sách..." value="${fn:escapeXml(param.searchkeyword)}"> <a
+						placeholder="Tìm kiếm sách..."
+						value="${fn:escapeXml(param.searchkeyword)}"> <a
 						class="search-link" href="#"><i class="ri-search-line"></i></a>
 					<c:if test="${not empty sessionScope.USER_MODEL}">
 						<button id="searchbutton"

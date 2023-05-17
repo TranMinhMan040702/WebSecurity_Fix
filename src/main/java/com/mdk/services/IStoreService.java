@@ -1,13 +1,10 @@
 package com.mdk.services;
 
 
-import com.mdk.models.Orders;
-import com.mdk.models.Store;
-import com.mdk.paging.Pageble;
-
 import java.util.List;
 
 import com.mdk.models.Store;
+import com.mdk.paging.Pageble;
 
 public interface IStoreService {
     Store findById(int id);
