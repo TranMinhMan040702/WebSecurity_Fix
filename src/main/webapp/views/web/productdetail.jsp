@@ -166,7 +166,7 @@
 														</c:forEach>
 													</span>
 												</div>
-												<p>${review.content}</p>
+												<p><c:out value="${review.content}" /></p>
 											</td>
 										</tr>
 									</c:forEach>
