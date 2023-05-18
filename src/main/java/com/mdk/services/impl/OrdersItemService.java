@@ -21,8 +21,8 @@ public class OrdersItemService implements IOrdersItemService{
 	}
 
 	@Override
-	public int findUserByOrderItem(int orderItemId) {
-		return ordersItemDAO.findUserByOrdersItem(orderItemId);
+	public int findUserByOrders(int orderItemId) {
+		return ordersItemDAO.findUserByOrders(orderItemId);
 	}
 
 }
