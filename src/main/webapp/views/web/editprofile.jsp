@@ -38,6 +38,10 @@
 									<span class="text-danger w-100">CMND/CCCD đã được đăng
 										ký</span>
 								</c:if>
+								<c:if test="${no_update_email==true}">
+									<span class="text-danger w-100">Không thể update email</span>
+								</c:if>
+								
 							</div>
 							<div class=" row align-items-center">
 								<div class="form-group col-sm-6">

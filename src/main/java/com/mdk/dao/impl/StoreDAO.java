@@ -17,12 +17,10 @@ import com.mdk.services.IUserService;
 import com.mdk.services.impl.ImageStoreService;
 import com.mdk.services.impl.UserService;
 
-
 public class StoreDAO extends DBConnection implements IStoreDAO {
 	public Connection conn = null;
 	public PreparedStatement ps = null;
 	public ResultSet rs = null;
-	
 
 	@Override
 	public int totalStores() {
@@ -53,7 +51,8 @@ public class StoreDAO extends DBConnection implements IStoreDAO {
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				Store store = new Store();
-				store.setNameUser(userService.findById(rs.getInt("ownerId")).getLastname() + userService.findById(rs.getInt("ownerId")).getFirstname());
+				store.setNameUser(userService.findById(rs.getInt("ownerId")).getLastname()
+						+ userService.findById(rs.getInt("ownerId")).getFirstname());
 				store.setName(rs.getString("name"));
 				store.setBio(rs.getString("bio"));
 				store.setTotal(rs.getInt("total"));
@@ -177,17 +176,21 @@ public class StoreDAO extends DBConnection implements IStoreDAO {
 
 	@Override
 	public int count(String keyword, String state) {
+
+		// SQLi
 		StringBuilder sql = new StringBuilder("select count(*) from store");
-		if(state != "") {
-			sql.append(" where isOpen = " + Boolean.parseBoolean(state));
+		if (state != "") {
+			sql.append(" where isOpen = ?");
 		}
 		if (keyword != null) {
 			sql.append(" and name like ");
-			sql.append("\"%" + keyword + "%\"");
+			sql.append("\"%?%\"");
 		}
 		try {
 			conn = getConnection();
 			ps = conn.prepareStatement(String.valueOf(sql));
+			ps.setBoolean(1, Boolean.parseBoolean(state));
+			ps.setString(2, keyword);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				return rs.getInt(1);
@@ -299,8 +302,8 @@ public class StoreDAO extends DBConnection implements IStoreDAO {
 
 	@Override
 	public double revenueOfMonth(int storeId, String month, String year) {
-		String sql = "select sum(amountToStore) from orders where status like 'delivered' and storeId = ? and month" +
-				"(createdAt) = ? and year(createdAt) = ?";
+		String sql = "select sum(amountToStore) from orders where status like 'delivered' and storeId = ? and month"
+				+ "(createdAt) = ? and year(createdAt) = ?";
 		try {
 			conn = getConnection();
 			ps = conn.prepareStatement(sql);
@@ -400,7 +403,8 @@ public class StoreDAO extends DBConnection implements IStoreDAO {
 
 	@Override
 	public List<String> findOwnerEmailByStoreId(int id) {
-		StringBuilder sql = new StringBuilder("select user.email, user.firstname, user.lastname from store inner join user on store.ownerId = user.id where store.id = ?");
+		StringBuilder sql = new StringBuilder(
+				"select user.email, user.firstname, user.lastname from store inner join user on store.ownerId = user.id where store.id = ?");
 		List<String> datas = new ArrayList<String>();
 		try {
 			conn = getConnection();
@@ -420,9 +424,7 @@ public class StoreDAO extends DBConnection implements IStoreDAO {
 
 	@Override
 	public void updateWallet(int id, double eWallet) {
-		String sql = "UPDATE store "
-				+ "SET eWallet = ? "
-				+ "WHERE id = ?";
+		String sql = "UPDATE store " + "SET eWallet = ? " + "WHERE id = ?";
 		try {
 			conn = super.getConnection();
 			ps = conn.prepareStatement(sql);
@@ -448,6 +450,7 @@ public class StoreDAO extends DBConnection implements IStoreDAO {
 			e.printStackTrace();
 		}
 	}
+
 	public void deleteSoft(int id) {
 		String sql = "UPDATE store SET isOpen = false WHERE id = ?";
 		try {
@@ -500,7 +503,7 @@ public class StoreDAO extends DBConnection implements IStoreDAO {
 				store.setName(rs.getString("name"));
 				store.setBio(rs.getString("bio"));
 				store.setOwnerID(rs.getInt("ownerID"));
-				store.setAvatar(rs.getString("avatar"));  //tạm để lấy tên chủ cửa hàng đưa vào đây
+				store.setAvatar(rs.getString("avatar")); // tạm để lấy tên chủ cửa hàng đưa vào đây
 				store.setOpen(rs.getBoolean("isOpen"));
 				store.setRating(rs.getInt("rating"));
 				store.seteWallet(rs.getDouble("eWallet"));

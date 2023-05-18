@@ -56,6 +56,7 @@ public class UserController extends HttpServlet {
 
 			req.setAttribute("id_card_exist", req.getParameter("id_card_exist"));
 			req.setAttribute("phone_exist", req.getParameter("phone_exist"));
+			req.setAttribute("no_update_email", req.getAttribute("no_update_email"));
 			req.setAttribute("id", id);
 			req.setAttribute("user", user);
 			req.getRequestDispatcher("/views/web/editprofile.jsp").forward(req, resp);
@@ -90,11 +91,22 @@ public class UserController extends HttpServlet {
 			resp.sendRedirect(req.getContextPath() + "/web/user/edit");
 
 		} else if (url.contains("update")) {
+			// Error update email 
 			int id = ((User) SessionUtil.getInstance().getValue(req, USER_MODEL)).getId();
 			User user = userService.findById(id);
 			String phone = user.getPhone();
 			String id_card = user.getId_card();
-			System.out.print((phone != req.getParameter("phone")));
+			
+			// Fix update email
+			String email = user.getEmail();
+			String emailReq = req.getParameter(email);
+			
+			if (!email.equals(emailReq)) {
+				resp.sendRedirect(req.getContextPath() + "/web/user/edit?no_update_email=true");
+				return;
+			}
+			///===============
+			
 			if ((userService.checkPhoneExist(req.getParameter("phone")) > 0)
 					&& (!phone.equals(req.getParameter("phone")))) {
 				resp.sendRedirect(req.getContextPath() + "/web/user/edit?phone_exist=true");
@@ -118,7 +130,6 @@ public class UserController extends HttpServlet {
 		user.setId(id);
 		user.setFirstname(req.getParameter("firstname"));
 		user.setLastname(req.getParameter("lastname"));
-		user.setEmail(req.getParameter("email"));
 		user.setPhone(req.getParameter("phone"));
 		user.setId_card(req.getParameter("id_card"));
 		user.setSex(req.getParameter("sex"));
