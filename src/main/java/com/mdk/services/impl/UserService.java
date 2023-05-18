@@ -6,6 +6,7 @@ import com.mdk.models.User;
 import com.mdk.paging.Pageble;
 import com.mdk.services.IUserService;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class UserService implements IUserService {
@@ -37,7 +38,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User findOneByUsernameAndPassword(String username, String password) {
+    public User findOneByUsernameAndPassword(String username, String password) throws NoSuchAlgorithmException {
         return userDao.findOneByUsernameAndPassword(username, password);
     }
 

@@ -1,5 +1,6 @@
 package com.mdk.services;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import com.mdk.models.User;
@@ -30,7 +31,7 @@ public interface IUserService {
 
 	List<User> findAll(Pageble pageble, String keyword);
 
-	User findOneByUsernameAndPassword(String username, String password);
+	User findOneByUsernameAndPassword(String username, String password) throws NoSuchAlgorithmException;
 
 	int checkEmailExist(String email);
 

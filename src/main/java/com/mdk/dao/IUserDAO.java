@@ -1,6 +1,7 @@
 
 package com.mdk.dao;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import com.mdk.models.User;
@@ -19,7 +20,7 @@ public interface IUserDAO {
     List<User> top10Users_Orders();
     int count(String keyword);
     List<User> findAll(Pageble pageble, String keyword);
-    User findOneByUsernameAndPassword(String username, String password);
+    User findOneByUsernameAndPassword(String username, String password) throws NoSuchAlgorithmException;
     int checkEmailExist(String email);
     int checkPhoneExist(String phone);
     int checkId_card(String id_card);
