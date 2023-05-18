@@ -11,6 +11,7 @@ import static com.mdk.utils.AppConstant.USER_MODEL;
 import static com.mdk.utils.AppConstant.USER_LOGIN;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -43,9 +44,19 @@ public class LoginController extends HttpServlet {
         if (url.contains("login")) {
             if (user != null) {
                 if (action.equals("loginnow")) {
-                    ReqLogin(req, resp, user, false);
+                    try {
+						ReqLogin(req, resp, user, false);
+					} catch (NoSuchAlgorithmException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} 
                 } else {
-                    ReqLogin(req, resp, user, true);
+                    try {
+						ReqLogin(req, resp, user, true);
+					} catch (NoSuchAlgorithmException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} 
                 }
             }
             else {
@@ -71,7 +82,12 @@ public class LoginController extends HttpServlet {
             User user = new User();
             user.setEmail(username);
             user.setPassword(password);
-            ReqLogin(req, resp, user, false);
+            try {
+				ReqLogin(req, resp, user, false);
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
     }
     
@@ -85,7 +101,7 @@ public class LoginController extends HttpServlet {
     }
     
     protected void ReqLogin(HttpServletRequest req, HttpServletResponse resp, User userLogin, boolean isLoginGoogle) throws ServletException,
-            IOException {
+            IOException, NoSuchAlgorithmException {
         User user = userService.findOneByUsernameAndPassword(userLogin.getEmail(), userLogin.getPassword());
      
         if (user != null) {

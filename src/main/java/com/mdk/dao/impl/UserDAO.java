@@ -4,7 +4,9 @@ import com.mdk.connection.DBConnection;
 import com.mdk.dao.IUserDAO;
 import com.mdk.models.User;
 import com.mdk.paging.Pageble;
+import com.mdk.utils.HashPassword;
 
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -149,14 +151,14 @@ public class UserDAO extends DBConnection implements IUserDAO {
 	}
 
 	@Override
-	public User findOneByUsernameAndPassword(String username, String password) {
+	public User findOneByUsernameAndPassword(String username, String password) throws NoSuchAlgorithmException {
 		String sql = "select * from user where email = ? and password = ?";
 		User user = new User();
 		try {
 			conn = getConnection();
 			ps = conn.prepareStatement(sql);
 			ps.setString(1, username);
-			ps.setString(2, password);
+			ps.setString(2, HashPassword.hashSHA256(password, username));
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				user.setId(rs.getInt("id"));
@@ -223,7 +225,7 @@ public class UserDAO extends DBConnection implements IUserDAO {
 			ps.setString(3, user.getId_card());
 			ps.setString(4, user.getEmail());
 			ps.setString(5, user.getPhone());
-			ps.setString(6, user.getPassword());
+			ps.setString(6, HashPassword.hashSHA256(user.getPassword(), user.getEmail()));
 			ps.setString(7, user.getSex() == "Nam" ? "Nam" : user.getSex() == "Nữ" ? "Nữ" : "Đang cập nhật");
 			ps.executeUpdate();
 		} catch (Exception e) {
