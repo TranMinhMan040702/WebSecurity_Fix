@@ -64,12 +64,12 @@ public class OrdersItemDAO extends DBConnection implements IOrdersItemDAO {
 	}
 
 	@Override
-	public int findUserByOrdersItem(int orderItemId) {
-		String sql = "select userId from ordersitem join orders on ordersitem.ordersId = orders.id where ordersitem.id = ?";
+	public int findUserByOrders(int orderId) {
+		String sql = "select userId from orders where orders.id = ?";
 		try {
 			conn = getConnection();
 			ps = conn.prepareStatement(sql);
-			ps.setInt(1, orderItemId);
+			ps.setInt(1, orderId);
 			rs = ps.executeQuery();
 			while(rs.next()) {
 				return rs.getInt("userId");

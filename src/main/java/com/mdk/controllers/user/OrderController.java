@@ -69,7 +69,7 @@ public class OrderController extends HttpServlet {
 			// Insecure Direct Object References
 
 			int id = Integer.parseInt(req.getParameter("id"));
-			if (!checkOrderItemOfUserCurrent(req, id)) {
+			if (!checkOrderOfUserCurrent(req, id)) {
 				resp.sendRedirect(req.getContextPath() + "/logout");
 			} else {
 				Orders orders = ordersService.findById(id);
@@ -94,10 +94,10 @@ public class OrderController extends HttpServlet {
 
 	}
 
-	private boolean checkOrderItemOfUserCurrent(HttpServletRequest req, int orderItemId) {
+	private boolean checkOrderOfUserCurrent(HttpServletRequest req, int orderItemId) {
 
 		int id = ((User) SessionUtil.getInstance().getValue(req, "USERMODEL")).getId();
-		int idUserOfOrderItem = ordersItemService.findUserByOrderItem(orderItemId);
+		int idUserOfOrderItem = ordersItemService.findUserByOrders(orderItemId);
 
 		return id == idUserOfOrderItem ? true : false;
 	}
