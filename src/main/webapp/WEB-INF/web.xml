@@ -30,7 +30,15 @@
         <filter-name>servletFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+	<filter>
+        <filter-name>servletXSSFilter</filter-name>
+        <filter-class>com.mdk.filter.XSSPreventionFilter</filter-class>
+    </filter>
 
+    <filter-mapping>
+        <filter-name>servletXSSFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     <error-page>
         <location>/ExceptionHandler</location>
     </error-page>
