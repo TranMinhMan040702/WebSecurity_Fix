@@ -3,7 +3,17 @@
          xmlns="http://java.sun.com/xml/ns/javaee"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee" version="3.0">
     <display-name>eCommerceWebsite</display-name>
-
+	<security-constraint>
+	    <web-resource-collection>
+	        <web-resource-name>eCommerceWebsite</web-resource-name>
+	        <url-pattern>/*</url-pattern>
+	    </web-resource-collection>
+	
+	    <user-data-constraint>
+	        <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+	    </user-data-constraint>
+	
+	</security-constraint>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
@@ -19,8 +29,10 @@
     </filter-mapping>
     <session-config>
         <tracking-mode>COOKIE</tracking-mode>
+		 <cookie-config>
+		 	<secure>true</secure>
+		 </cookie-config>
     </session-config>
-
     <filter>
         <filter-name>servletFilter</filter-name>
         <filter-class>com.mdk.filter.AuthorizationFilter</filter-class>
