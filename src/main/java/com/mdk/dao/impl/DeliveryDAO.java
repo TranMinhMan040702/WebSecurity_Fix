@@ -33,7 +33,7 @@ public class DeliveryDAO extends DBConnection implements IDeliveryDAO {
 				delivery.setPrice(rs.getDouble("price"));
 				delivery.setDeleted(rs.getBoolean("isDeleted"));
 				delivery.setCreatedAt(rs.getTimestamp("createdAt"));
-				delivery.setUpdatedAt(rs.getTimestamp("updatedAt"));
+//				delivery.setUpdatedAt(rs.getTimestamp("updatedAt"));
 			}
 			return delivery;
 		} catch (SQLException e) {
