@@ -4,7 +4,6 @@ import static com.mdk.utils.AppConstant.USER_MODEL;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
-import com.mdk.models.ImageStore;
 import com.mdk.models.User;
 import com.mdk.services.IUserService;
 import com.mdk.services.impl.UserService;
@@ -187,7 +185,6 @@ public class UserController extends HttpServlet {
 		resp.setCharacterEncoding("UTF-8");
 
 		User user = new User();
-		List<ImageStore> images = new ArrayList<>();
 
 		user.setPassword(req.getParameter("password"));
 		userService.update(user);

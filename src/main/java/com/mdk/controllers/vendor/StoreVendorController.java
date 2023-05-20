@@ -91,7 +91,6 @@ public class StoreVendorController extends HttpServlet {
         } else if (url.contains("edit")) {
             update(req, resp);
             resetSessionStore(req);
-            Store store = (Store) SessionUtil.getInstance().getValue(req, STORE_MODEL);
             resp.sendRedirect(req.getContextPath() + "/vendor/store?message=update_success");
         }
     }

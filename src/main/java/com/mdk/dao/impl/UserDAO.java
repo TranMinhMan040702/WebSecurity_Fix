@@ -1,11 +1,5 @@
 package com.mdk.dao.impl;
 
-import com.mdk.connection.DBConnection;
-import com.mdk.dao.IUserDAO;
-import com.mdk.models.User;
-import com.mdk.paging.Pageble;
-import com.mdk.utils.HashPassword;
-
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,6 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.mdk.connection.DBConnection;
+import com.mdk.dao.IUserDAO;
+import com.mdk.models.User;
+import com.mdk.paging.Pageble;
 
 public class UserDAO extends DBConnection implements IUserDAO {
 	Connection conn = null;
@@ -71,9 +70,9 @@ public class UserDAO extends DBConnection implements IUserDAO {
 	@Override
 	public List<User> top10Users_Orders() {
 
-		String sql = "select user.id, user.firstname, user.lastname, user.id_card, user.email, user.phone, total " +
-				"from (select userId, count(userId) as total from orders group by userId order by total desc) as tb join user on tb.userId = user.id " +
-				"where user.role = 'USER' order by total DESC limit 10 ";
+		String sql = "select user.id, user.firstname, user.lastname, user.id_card, user.email, user.phone, total "
+				+ "from (select userId, count(userId) as total from orders group by userId order by total desc) as tb join user on tb.userId = user.id "
+				+ "where user.role = 'USER' order by total DESC limit 10 ";
 
 		List<User> users = new ArrayList<User>();
 		try {
@@ -100,12 +99,15 @@ public class UserDAO extends DBConnection implements IUserDAO {
 	public int count(String keyword) {
 		StringBuilder sql = new StringBuilder("select count(*) from user where role = 'USER'");
 		if (keyword != null) {
-			sql.append(" and firstname like ");
-			sql.append("\"%" + keyword + "%\"");
+			sql.append(" and firstname like ?");
 		}
 		try {
 			conn = getConnection();
 			ps = conn.prepareStatement(String.valueOf(sql));
+			if (keyword != null) {
+				ps.setString(1, "%" + keyword + "%");
+			}
+
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				return rs.getInt(1);
@@ -120,20 +122,29 @@ public class UserDAO extends DBConnection implements IUserDAO {
 	public List<User> findAll(Pageble pageble, String keyword) {
 		StringBuilder sql = new StringBuilder("select * from user where role = 'USER'");
 		if (keyword != null) {
-			sql.append(" and firstname like ");
-			sql.append("\"%" + keyword + "%\"");
-		}
-		if (pageble.getSorter() != null) {
-			sql.append(" order by " + pageble.getSorter().getSortName() + " " + pageble.getSorter().getSortBy() + "");
+			sql.append(" and firstname like ?");
 		}
 		if (pageble.getOffset() != null && pageble.getLimit() != null) {
-			sql.append(" limit " + pageble.getOffset() + ", " + pageble.getLimit() + "");
+			sql.append(" limit ?, ?");
 		}
 
 		List<User> users = new ArrayList<User>();
 		try {
 			conn = getConnection();
 			ps = conn.prepareStatement(String.valueOf(sql));
+			if (keyword != null) {
+				ps.setString(1, "%" + keyword + "%");
+				if (pageble.getOffset() != null && pageble.getLimit() != null) {
+					ps.setInt(2, pageble.getOffset());
+					ps.setInt(3, pageble.getLimit());
+				}
+			} else {
+				if (pageble.getOffset() != null && pageble.getLimit() != null) {
+					ps.setInt(1, pageble.getOffset());
+					ps.setInt(2, pageble.getLimit());
+				}
+			}
+
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				User user = new User();
@@ -205,7 +216,7 @@ public class UserDAO extends DBConnection implements IUserDAO {
 				user.seteWallet(rs.getDouble("eWallet"));
 				user.setSex(rs.getString("sex"));
 				user.setCreatedAt(rs.getTimestamp("createdAt"));
-				user.setUpdatedAt(rs.getTimestamp("updatedAt"));
+//				user.setUpdatedAt(rs.getTimestamp("updatedAt"));
 				return user;
 			}
 		} catch (SQLException e) {
@@ -237,7 +248,8 @@ public class UserDAO extends DBConnection implements IUserDAO {
 
 	@Override
 	public void update(User user) {
-		String sql = "UPDATE user " + "SET firstname = ?, lastname = ?, id_card = ?, email = ?, phone = ?, avatar = ?, sex = ? "
+		String sql = "UPDATE user "
+				+ "SET firstname = ?, lastname = ?, id_card = ?, email = ?, phone = ?, avatar = ?, sex = ? "
 				+ "WHERE id = ?";
 		try {
 			conn = super.getConnection();
@@ -297,9 +309,7 @@ public class UserDAO extends DBConnection implements IUserDAO {
 
 	@Override
 	public void updateWallet(int id, double eWallet) {
-		String sql = "UPDATE user "
-				+ "SET eWallet = ? "
-				+ "WHERE id = ?";
+		String sql = "UPDATE user " + "SET eWallet = ? " + "WHERE id = ?";
 		try {
 			conn = super.getConnection();
 			ps = conn.prepareStatement(sql);
@@ -311,70 +321,68 @@ public class UserDAO extends DBConnection implements IUserDAO {
 		}
 	}
 
-    @Override
-    public int checkEmailExist(String email) {
-        String sql = "select count(*) from user where email like ?";
-        try {
-            conn = getConnection();
-            ps = conn.prepareStatement(sql);
-            ps.setString(1, email);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                return rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
+	@Override
+	public int checkEmailExist(String email) {
+		String sql = "select count(*) from user where email like ?";
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, email);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				return rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
 
 	@Override
 	public int checkPhoneExist(String phone) {
 		String sql = "select count(*) from user where phone = ?";
-        try {
-            conn = getConnection();
-            ps = conn.prepareStatement(sql);
-            ps.setString(1, phone);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                return rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, phone);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				return rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 
 	@Override
 	public int checkId_card(String id_card) {
 		String sql = "select count(*) from user where id_card = ?";
-        try {
-            conn = getConnection();
-            ps = conn.prepareStatement(sql);
-            ps.setString(1, id_card);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                return rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement(sql);
+			ps.setString(1, id_card);
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				return rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 
 	@Override
 	public void updatePass(int id, String pass) {
-		String sql = "UPDATE user " + "SET password = ? "
-				+ "WHERE id = ?";
+		String sql = "UPDATE user " + "SET password = ? " + "WHERE id = ?";
 		try {
 			conn = super.getConnection();
 			ps = conn.prepareStatement(sql);
 			ps.setString(1, pass);
-			ps.setInt(2,  id);
+			ps.setInt(2, id);
 			ps.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 }
-

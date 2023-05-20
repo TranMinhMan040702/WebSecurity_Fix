@@ -74,7 +74,7 @@ public class UserFollowingController extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		String url = req.getRequestURL().toString();
+		
 		System.out.print("post");
 	}
 }

@@ -10,9 +10,7 @@ import java.util.List;
 import com.mdk.connection.DBConnection;
 import com.mdk.dao.IOrdersItemDAO;
 import com.mdk.models.OrdersItem;
-import com.mdk.services.IOrdersService;
 import com.mdk.services.IProductService;
-import com.mdk.services.impl.OrdersService;
 import com.mdk.services.impl.ProductService;
 
 public class OrdersItemDAO extends DBConnection implements IOrdersItemDAO {
@@ -40,7 +38,6 @@ public class OrdersItemDAO extends DBConnection implements IOrdersItemDAO {
 	public List<OrdersItem> findByOrdersId(int ordersId) {
 		String sql = "select * from ordersItem where ordersId = ?";
 		List<OrdersItem> ordersItems = new ArrayList<>();
-		IOrdersService ordersService = new OrdersService();
 		IProductService productService = new ProductService();
 		try {
 			conn = getConnection();

@@ -92,22 +92,32 @@ public class StoreDAO extends DBConnection implements IStoreDAO {
 	public List<Store> findAll(Pageble pageble, String keyword, String state) {
 		StringBuilder sql = new StringBuilder("select * from store");
 		if (state != "") {
-			sql.append(" where isOpen = " + Boolean.parseBoolean(state));
+			sql.append(" where isOpen = ?");
 		}
 		if (keyword != null) {
-			sql.append(" and name like ");
-			sql.append("\"%" + keyword + "%\"");
-		}
-		if (pageble.getSorter() != null) {
-			sql.append(" order by " + pageble.getSorter().getSortName() + " " + pageble.getSorter().getSortBy() + "");
+			sql.append(" and name like ?");
 		}
 		if (pageble.getOffset() != null && pageble.getLimit() != null) {
-			sql.append(" limit " + pageble.getOffset() + ", " + pageble.getLimit() + "");
+			sql.append(" limit ?, ?");
 		}
 		List<Store> stores = new ArrayList<Store>();
 		try {
 			conn = getConnection();
 			ps = conn.prepareStatement(String.valueOf(sql));
+			ps.setBoolean(1, Boolean.parseBoolean(state));
+			if (keyword != null) {
+				ps.setString(2, "%" + keyword + "%");
+				if (pageble.getOffset() != null && pageble.getLimit() != null) {
+					ps.setInt(3, pageble.getOffset());
+					ps.setInt(4, pageble.getLimit());
+				}
+			} else {
+				if (pageble.getOffset() != null && pageble.getLimit() != null) {
+					ps.setInt(2, pageble.getOffset());
+					ps.setInt(3, pageble.getLimit());
+				}
+			}
+
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				Store store = new Store();
@@ -183,14 +193,16 @@ public class StoreDAO extends DBConnection implements IStoreDAO {
 			sql.append(" where isOpen = ?");
 		}
 		if (keyword != null) {
-			sql.append(" and name like ");
-			sql.append("\"%?%\"");
+			sql.append(" and name like ?");
 		}
 		try {
 			conn = getConnection();
 			ps = conn.prepareStatement(String.valueOf(sql));
 			ps.setBoolean(1, Boolean.parseBoolean(state));
-			ps.setString(2, keyword);
+			if (keyword != null) {
+				ps.setString(2, "%" + keyword + "%");
+			}
+
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				return rs.getInt(1);

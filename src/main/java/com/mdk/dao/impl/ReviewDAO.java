@@ -11,12 +11,10 @@ import com.mdk.connection.DBConnection;
 import com.mdk.dao.IReviewDAO;
 import com.mdk.models.Review;
 import com.mdk.paging.Pageble;
-import com.mdk.services.IImageStoreService;
 import com.mdk.services.IOrdersService;
 import com.mdk.services.IProductService;
 import com.mdk.services.IStoreService;
 import com.mdk.services.IUserService;
-import com.mdk.services.impl.ImageStoreService;
 import com.mdk.services.impl.OrdersService;
 import com.mdk.services.impl.ProductService;
 import com.mdk.services.impl.StoreService;
@@ -26,7 +24,7 @@ public class ReviewDAO extends DBConnection implements IReviewDAO {
 	public Connection conn = null;
 	public PreparedStatement ps = null;
 	public ResultSet rs = null;
-	
+
 	@Override
 	public void insert(Review review) {
 		String sql = "insert into review(userId, productId, storeId, ordersId, content, stars) values(?, ?, ?, ?, ?, ?)";
@@ -48,8 +46,7 @@ public class ReviewDAO extends DBConnection implements IReviewDAO {
 	@Override
 	public void update(Review review) {
 		String sql = "update review "
-				+ "set userId = ?, productId = ?, storeId = ?, ordersId = ?, content = ?, stars = ? "
-				+ "where id = ?";
+				+ "set userId = ?, productId = ?, storeId = ?, ordersId = ?, content = ?, stars = ? " + "where id = ?";
 		try {
 			conn = getConnection();
 			ps = conn.prepareStatement(sql);
@@ -64,8 +61,7 @@ public class ReviewDAO extends DBConnection implements IReviewDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
-		
+
 	}
 
 	@Override
@@ -104,7 +100,7 @@ public class ReviewDAO extends DBConnection implements IReviewDAO {
 				review.setStars(rs.getInt("stars"));
 				review.setContent(rs.getString("content"));
 				review.setCreatedAt(rs.getTimestamp("createdAt"));
-				review.setUpdatedAt(rs.getTimestamp("updatedAt"));
+//				review.setUpdatedAt(rs.getTimestamp("updatedAt"));
 				review.setUser(userService.findById(review.getUserId()));
 				review.setProduct(productService.findOneById(review.getProductId()));
 				review.setStore(storeService.findById(review.getStoreId()));
@@ -140,7 +136,7 @@ public class ReviewDAO extends DBConnection implements IReviewDAO {
 				review.setStars(rs.getInt("stars"));
 				review.setContent(rs.getString("content"));
 				review.setCreatedAt(rs.getTimestamp("createdAt"));
-				review.setUpdatedAt(rs.getTimestamp("updatedAt"));
+//				review.setUpdatedAt(rs.getTimestamp("updatedAt"));
 				review.setUser(userService.findById(review.getUserId()));
 				review.setProduct(productService.findOneById(review.getProductId()));
 				review.setStore(storeService.findById(review.getStoreId()));
@@ -152,53 +148,75 @@ public class ReviewDAO extends DBConnection implements IReviewDAO {
 		}
 		return reviews;
 	}
+
 	@Override
-    public List<Review> findByStore(Pageble pageble, int storeId, String star, String searchKey) {
-        StringBuilder sql = new StringBuilder("select * from review inner join "
-                + "product on review.productId = product.id\r\n"
-                + "where review.storeId = ?");
-        List<Review> reviews = new ArrayList<Review>();
-        IImageStoreService imageStoreService = new ImageStoreService();
-        IUserService userService = new UserService();
-        IProductService productService = new ProductService();
-        IStoreService storeService = new StoreService();
-        IOrdersService orderService = new OrdersService();
-        if (!star.equals("all")) {
-            sql.append(" and stars = " + star);
-        }
-        if (searchKey != null) {
-            sql.append(" and product.name like ");
-            sql.append("\"%" + searchKey + "%\"");
-        }
-        if (pageble.getSorter() != null) {
-            sql.append(" order by " + pageble.getSorter().getSortName() + " " + pageble.getSorter().getSortBy() + "");
-        }
-        if (pageble.getOffset() != null && pageble.getLimit() != null) {
-            sql.append(" limit " + pageble.getOffset() + ", " + pageble.getLimit() + "");
-        }
-        try {
-            conn = getConnection();
-            ps = conn.prepareStatement(String.valueOf(sql));
-            ps.setInt(1, storeId);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                Review review = new Review();
-                review.setId(rs.getInt("id"));
-                review.setProductId(rs.getInt("productId"));
-                review.setUserId(rs.getInt("userId"));
-                review.setStars(rs.getInt("stars"));
-                review.setContent(rs.getString("content"));
-                review.setCreatedAt(rs.getTimestamp("createdAt"));
-                review.setUpdatedAt(rs.getTimestamp("updatedAt"));
-                review.setUser(userService.findById(review.getUserId()));
-                review.setProduct(productService.findOneById(review.getProductId()));
-                reviews.add(review);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return reviews;
-    }
+	public List<Review> findByStore(Pageble pageble, int storeId, String star, String searchKey) {
+		StringBuilder sql = new StringBuilder("select * from review inner join "
+				+ "product on review.productId = product.id\r\n" + "where review.storeId = ?");
+		List<Review> reviews = new ArrayList<Review>();
+		IUserService userService = new UserService();
+		IProductService productService = new ProductService();
+		if (!star.equals("all")) {
+			sql.append(" and stars = ?");
+		}
+		if (searchKey != null) {
+			sql.append(" and product.name like ?");
+		}
+		if (pageble.getOffset() != null && pageble.getLimit() != null) {
+			sql.append(" limit ?, ?");
+		}
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement(String.valueOf(sql));
+			ps.setInt(1, storeId);
+			if (!star.equals("all")) {
+				ps.setString(2, star);
+				if (searchKey != null) {
+					ps.setString(3, "%" + searchKey + "%");
+					if (pageble.getOffset() != null && pageble.getLimit() != null) {
+						ps.setInt(4, pageble.getOffset());
+						ps.setInt(5, pageble.getLimit());
+					}
+				} else {
+					if (pageble.getOffset() != null && pageble.getLimit() != null) {
+						ps.setInt(3, pageble.getOffset());
+						ps.setInt(4, pageble.getLimit());
+					}
+				}
+			} else {
+				if (searchKey != null) {
+					ps.setString(2, "%" + searchKey + "%");
+					if (pageble.getOffset() != null && pageble.getLimit() != null) {
+						ps.setInt(3, pageble.getOffset());
+						ps.setInt(4, pageble.getLimit());
+					}
+				} else {
+					if (pageble.getOffset() != null && pageble.getLimit() != null) {
+						ps.setInt(2, pageble.getOffset());
+						ps.setInt(3, pageble.getLimit());
+					}
+				}
+			}
+
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Review review = new Review();
+				review.setId(rs.getInt("id"));
+				review.setProductId(rs.getInt("productId"));
+				review.setUserId(rs.getInt("userId"));
+				review.setStars(rs.getInt("stars"));
+				review.setContent(rs.getString("content"));
+				review.setCreatedAt(rs.getTimestamp("createdAt"));
+//				review.setUpdatedAt(rs.getTimestamp("updatedAt"));
+				review.setUser(userService.findById(review.getUserId()));
+				review.setProduct(productService.findOneById(review.getProductId()));
+				reviews.add(review);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return reviews;
+	}
 
 	@Override
 	public Review findReview(Review review) {
@@ -225,7 +243,7 @@ public class ReviewDAO extends DBConnection implements IReviewDAO {
 				new_review.setStars(rs.getInt("stars"));
 				new_review.setContent(rs.getString("content"));
 				new_review.setCreatedAt(rs.getTimestamp("createdAt"));
-				new_review.setUpdatedAt(rs.getTimestamp("updatedAt"));
+//				new_review.setUpdatedAt(rs.getTimestamp("updatedAt"));
 				new_review.setUser(userService.findById(review.getUserId()));
 				new_review.setProduct(productService.findOneById(review.getProductId()));
 				new_review.setStore(storeService.findById(review.getStoreId()));
@@ -238,30 +256,39 @@ public class ReviewDAO extends DBConnection implements IReviewDAO {
 		return null;
 	}
 
-    @Override
-    public int count(int storeId, String star, String searchKey) {
-        StringBuilder sql = new StringBuilder("select count(*) from review "
-                + "inner join product on review.productId = product.id\r\n"
-                + "where review.storeId = ?");
-        if (!star.equals("all")) {
-            sql.append(" and stars = " + star);
-        }
-        if (searchKey != null) {
-            sql.append(" and product.name like ");
-            sql.append("\"%" + searchKey + "%\"");
-        }
-        try {
-            conn = getConnection();
-            ps = conn.prepareStatement(String.valueOf(sql));
-            ps.setInt(1, storeId);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                return rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
+	@Override
+	public int count(int storeId, String star, String searchKey) {
+		StringBuilder sql = new StringBuilder("select count(*) from review "
+				+ "inner join product on review.productId = product.id\r\n" + "where review.storeId = ?");
+		if (!star.equals("all")) {
+			sql.append(" and stars = ?");
+		}
+		if (searchKey != null) {
+			sql.append(" and product.name like ?");
+		}
+		try {
+			conn = getConnection();
+			ps = conn.prepareStatement(String.valueOf(sql));
+			ps.setInt(1, storeId);
+			if (!star.equals("all")) {
+				ps.setString(2, star);
+				if (searchKey != null) {
+					ps.setString(3, "%" + searchKey + "%");
+				}
+			} else {
+				if (searchKey != null) {
+					ps.setString(2, "%" + searchKey + "%");
+				}
+			}
+
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				return rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
 
 }
