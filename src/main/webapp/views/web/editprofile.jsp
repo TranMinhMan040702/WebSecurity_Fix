@@ -125,7 +125,7 @@ Số 1 Võ Văn Ngân, Thủ Đức
 					</div>
 				</div>
 			</div>
-			<c:if test="${user.password.length() <= 15 }">
+			
 				<div class="col-lg-12">
 					<div class="iq-card">
 						<div class="iq-card-header d-flex justify-content-between">
@@ -139,7 +139,7 @@ Số 1 Võ Văn Ngân, Thủ Đức
 									khẩu hiện tại</span>
 								<div class="form-group">
 									<label for="cpass">Mật khẩu hiện tại:</label> <input
-										oninput="currentPass()" name="current_pass" type="Password"
+										name="current_pass" type="Password"
 										class="form-control" id="current_pass" value="">
 								</div>
 								<div class="form-group">
@@ -160,26 +160,12 @@ Số 1 Võ Văn Ngân, Thủ Đức
 						</div>
 					</div>
 				</div>
-			</c:if>
+			
 		</div>
 	</div>
 </div>
 
 <script>
-
-function currentPass()
-{
-	var cur_pass = document.getElementById("current_pass").value;
-	
-	if(cur_pass.localeCompare(${user.password}) != 0)
-	{
-		document.getElementById("caution").classList.remove("d-none");
-	}
-	else
-	{
-		document.getElementById("caution").classList.add("d-none");
-	}
-}
 
 function changePass()
 {
