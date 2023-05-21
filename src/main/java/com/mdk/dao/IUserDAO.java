@@ -12,7 +12,7 @@ public interface IUserDAO {
 	void update(User user);
 	void delete(int id);
 	void updateWallet(int id, double eWallet);
-	void updatePass(int id, String pass);
+	void updatePass(int id, String pass, String email);
 	List<User> findBySearching(String keyword);
     List<User> findAll();
     List<User> findAllForReport();

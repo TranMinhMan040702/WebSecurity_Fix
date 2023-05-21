@@ -89,8 +89,8 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public void updatePass(int id, String pass) {
-		userDao.updatePass(id, pass);
+	public void updatePass(int id, String pass, String email) {
+		userDao.updatePass(id, pass, email);
 	}
 
 }

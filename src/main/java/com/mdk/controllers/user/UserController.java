@@ -4,6 +4,7 @@ import static com.mdk.utils.AppConstant.USER_MODEL;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import com.mdk.services.IUserService;
 import com.mdk.services.impl.UserService;
 import com.mdk.utils.AppConstant;
 import com.mdk.utils.DeleteImageUtil;
+import com.mdk.utils.HashPassword;
 import com.mdk.utils.SessionUtil;
 import com.mdk.utils.UploadUtil;
 
@@ -81,13 +83,24 @@ public class UserController extends HttpServlet {
 			resp.sendRedirect(req.getContextPath() + "/web/user/edit");
 
 		} else if (url.contains("updatepassword")) {
-			int id = ((User) SessionUtil.getInstance().getValue(req, USER_MODEL)).getId();
-			String pass = req.getParameter("new_pass");
-			userService.updatePass(id, pass);
-			User user = userService.findById(id);
-			SessionUtil.getInstance().putValue(req, USER_MODEL, user);
-			resp.sendRedirect(req.getContextPath() + "/web/user/edit");
-
+			
+			// Error  update password
+			try {
+				if (checkPassword(req)) {
+					User user = ((User) SessionUtil.getInstance().getValue(req, USER_MODEL));
+					String pass = req.getParameter("new_pass");
+					userService.updatePass(user.getId(), pass, user.getEmail());
+					User userResp = userService.findById(user.getId());
+					SessionUtil.getInstance().putValue(req, USER_MODEL, userResp);
+					resp.sendRedirect(req.getContextPath() + "/web/user/edit");
+				} else {
+					resp.sendRedirect(req.getContextPath() + "/logout");
+				}
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			}
+			
+			
 		} else if (url.contains("update")) {
 			// Error update email 
 			int id = ((User) SessionUtil.getInstance().getValue(req, USER_MODEL)).getId();
@@ -119,6 +132,18 @@ public class UserController extends HttpServlet {
 			update(req, resp);
 			resp.sendRedirect(req.getContextPath() + "/web/user/edit");
 		}
+	}
+	
+	protected boolean checkPassword(HttpServletRequest req) throws NoSuchAlgorithmException {
+		
+		User user = ((User) SessionUtil.getInstance().getValue(req, USER_MODEL));
+		String currentPassReq = req.getParameter("current_pass");
+		String currentPassReqHash = HashPassword.hashSHA256(currentPassReq, user.getEmail());
+		
+		if (user.getPassword().equals(currentPassReqHash)) {
+			return true;
+		}
+		return false;
 	}
 
 	protected void update(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

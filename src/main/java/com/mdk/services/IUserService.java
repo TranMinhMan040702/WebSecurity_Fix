@@ -15,7 +15,7 @@ public interface IUserService {
 
 	void updateWallet(int id, double eWallet);
 
-	void updatePass(int id, String pass);
+	void updatePass(int id, String pass, String email);
 
 	List<User> findBySearching(String keyword);
 

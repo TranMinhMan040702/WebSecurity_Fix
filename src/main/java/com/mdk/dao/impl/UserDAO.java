@@ -12,6 +12,7 @@ import com.mdk.connection.DBConnection;
 import com.mdk.dao.IUserDAO;
 import com.mdk.models.User;
 import com.mdk.paging.Pageble;
+import com.mdk.utils.HashPassword;
 
 public class UserDAO extends DBConnection implements IUserDAO {
 	Connection conn = null;
@@ -169,8 +170,8 @@ public class UserDAO extends DBConnection implements IUserDAO {
 			conn = getConnection();
 			ps = conn.prepareStatement(sql);
 			ps.setString(1, username);
-//			ps.setString(2, HashPassword.hashSHA256(password, username));
-			ps.setString(2, password);
+			ps.setString(2, HashPassword.hashSHA256(password, username));
+//			ps.setString(2, password);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				user.setId(rs.getInt("id"));
@@ -237,8 +238,8 @@ public class UserDAO extends DBConnection implements IUserDAO {
 			ps.setString(3, user.getId_card());
 			ps.setString(4, user.getEmail());
 			ps.setString(5, user.getPhone());
-//			ps.setString(6, HashPassword.hashSHA256(user.getPassword(), user.getEmail()));
-			ps.setString(6, user.getPassword());
+			ps.setString(6, HashPassword.hashSHA256(user.getPassword(), user.getEmail()));
+//			ps.setString(6, user.getPassword());
 			ps.setString(7, user.getSex() == "Nam" ? "Nam" : user.getSex() == "Nữ" ? "Nữ" : "Đang cập nhật");
 			ps.executeUpdate();
 		} catch (Exception e) {
@@ -373,12 +374,13 @@ public class UserDAO extends DBConnection implements IUserDAO {
 	}
 
 	@Override
-	public void updatePass(int id, String pass) {
+	public void updatePass(int id, String pass, String email) {
 		String sql = "UPDATE user " + "SET password = ? " + "WHERE id = ?";
 		try {
 			conn = super.getConnection();
 			ps = conn.prepareStatement(sql);
-			ps.setString(1, pass);
+			ps.setString(1, HashPassword.hashSHA256(pass, email));
+//			ps.setString(1, pass);
 			ps.setInt(2, id);
 			ps.executeUpdate();
 		} catch (Exception e) {

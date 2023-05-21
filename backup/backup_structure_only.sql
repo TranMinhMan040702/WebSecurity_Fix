@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS `address`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `address` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -81,7 +81,7 @@ DROP TABLE IF EXISTS `category`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `category` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `isDeleted` tinyint(1) DEFAULT '0',
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -99,8 +99,8 @@ DROP TABLE IF EXISTS `delivery`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `delivery` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `description` varchar(1000) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `description` varchar(1000) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `price` double NOT NULL,
   `isDeleted` tinyint(1) DEFAULT '0',
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -119,7 +119,7 @@ DROP TABLE IF EXISTS `image_product`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `image_product` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `productId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_image_product` (`productId`),
@@ -136,7 +136,7 @@ DROP TABLE IF EXISTS `image_store`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `image_store` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `storeId` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_image_store` (`storeId`),
@@ -156,9 +156,9 @@ CREATE TABLE `orders` (
   `userId` int(11) NOT NULL,
   `storeId` int(11) NOT NULL,
   `deliveryId` int(11) NOT NULL,
-  `address` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `phone` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
-  `status` varchar(50) COLLATE utf8_unicode_ci DEFAULT 'not-processed',
+  `address` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `phone` varchar(10) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `status` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT 'not-processed',
   `amountFromUser` double NOT NULL,
   `amountToStore` double NOT NULL,
   `amountToGD` double NOT NULL,
@@ -205,8 +205,8 @@ DROP TABLE IF EXISTS `product`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `product` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `description` varchar(1000) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `description` varchar(1000) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `price` double NOT NULL,
   `promotionalPrice` double NOT NULL,
   `quantity` int(11) NOT NULL,
@@ -239,7 +239,7 @@ CREATE TABLE `review` (
   `productId` int(11) NOT NULL,
   `storeId` int(11) NOT NULL,
   `ordersId` int(11) NOT NULL,
-  `content` varchar(1001) COLLATE utf8_unicode_ci NOT NULL,
+  `content` varchar(1001) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `stars` int(11) NOT NULL,
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -264,11 +264,11 @@ DROP TABLE IF EXISTS `store`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `store` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `bio` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `bio` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `ownerId` int(11) NOT NULL,
   `isOpen` tinyint(1) DEFAULT '1',
-  `avatar` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `avatar` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `rating` int(11) DEFAULT '3',
   `eWallet` double DEFAULT '0',
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -312,25 +312,25 @@ DROP TABLE IF EXISTS `user`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `firstname` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `lastname` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-  `id_card` varchar(9) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `email` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `phone` varchar(12) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `firstname` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `lastname` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `id_card` varchar(9) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `phone` varchar(12) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `isEmailActive` tinyint(1) DEFAULT '0',
   `isPhoneActive` tinyint(1) DEFAULT '0',
-  `password` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `role` varchar(50) COLLATE utf8_unicode_ci DEFAULT 'USER',
-  `avatar` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `password` varchar(1000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `role` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT 'USER',
+  `avatar` varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   `eWallet` double DEFAULT '0',
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `sex` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `sex` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_card` (`id_card`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `phone` (`phone`)
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -401,4 +401,4 @@ CREATE TABLE `userfollowstore` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-18 11:20:45
+-- Dump completed on 2023-05-21 12:58:31
