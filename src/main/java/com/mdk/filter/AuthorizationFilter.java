@@ -24,7 +24,7 @@ public class AuthorizationFilter implements Filter {
 
         HttpServletResponse res = (HttpServletResponse)response;
         res.setHeader("X-Content-Type-Options", "nosniff");
-//        res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src https:");
+        res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src https:");
         String url = req.getRequestURL().toString();
         if (url.contains("admin")) {
             checkAuthor(request, response, chain, ADMIN);
